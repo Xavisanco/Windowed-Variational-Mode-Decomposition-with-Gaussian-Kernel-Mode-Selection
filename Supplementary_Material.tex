@@ -1,0 +1,451 @@
+\documentclass[preprint,12pt]{elsarticle}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{framed}
+
+\definecolor{shadecolor}{RGB}{255,255,190}
+\newenvironment{revision}{\begin{shaded}}{\end{shaded}}
+\newcommand{\revphrase}[1]{\colorbox{yellow!30}{\strut #1}}
+\captionsetup{justification=centering}
+
+\makeatletter
+\long\def\pprintMaketitle{\clearpage
+  \resetTitleCounters
+  \def\baselinestretch{1}%
+  \printFirstPageNotes
+  \begin{\elsarticletitlealign}%
+    \thispagestyle{pprintTitle}%
+    \def\baselinestretch{1}%
+    \Large\@title\par\vskip6pt
+  \end{\elsarticletitlealign}%
+  \gdef\thefootnote{\arabic{footnote}}%
+}
+\makeatother
+
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thesection}{S\arabic{section}}
+
+\journal{Computer Methods and Programs in Biomedicine}
+
+\begin{document}
+
+\begin{frontmatter}
+\title{Supplementary Material\\[15pt]
+\large Windowed Variational Mode Decomposition with Gaussian-Kernel Mode Selection for Sex-Stratified Speech-Based Depression Screening}
+\vspace{-1cm}
+
+\end{frontmatter}
+
+\section{Window-Duration Comparison (0.5\,s, 1\,s, 2\,s)}
+\label{sec:supp-window}
+
+This supplement compares the three window durations evaluated in the window-duration analysis
+(Section 3.6 of the main text): 0.5\,s, 1\,s, and 2\,s, for both sexes,
+under the same discontinuity-aware pipeline reported throughout the main text. Within each model
+category, architecture selection was performed from out-of-fold TRAIN-CV AUC-ROC without using
+TEST (checkpoint 6 of Section 2.12). Table~\ref{tab:supp-window-best} reports the resulting
+category representative used for each sex--window configuration after Youden threshold
+calibration, together with its fixed-split TEST evaluation (Accuracy, F1) and its Experiment 3a
+mean AUC-ROC (fixed split, varied model seeds, $N_{\text{reps}}=10$). These TEST quantities are
+reported descriptively and should not be interpreted as an independent estimate after all design
+choices.
+
+\begin{table}[H]
+\centering
+\captionsetup{justification=raggedright, singlelinecheck=false}
+\caption{Reported architecture by window duration and sex. Within each category,
+the representative was selected from TRAIN-CV (checkpoint 6, Section 2.12); among the three
+category representatives, the row reports the one with the highest calibrated F1 on the original
+fixed TEST split. AUC-ROC is the Experiment 3a mean ($N_{\text{reps}}=10$); F1/Accuracy are
+descriptive values from the calibrated TEST evaluation.}
+\label{tab:supp-window-best}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llp{5.4cm}ccc}
+\toprule
+Window & Sex & Reported architecture & AUC-ROC (3a) & F1 & Accuracy \\
+\midrule
+\multirow{2}{*}{0.5\,s}
+ & FEMALE & Individual: DT & 0.529 & 0.533 & 0.632 \\[8pt]
+ & MALE   & Individual: LR & \normalsize\textbf{0.594} & \normalsize\textbf{0.421} & \normalsize\textbf{0.500} \\
+\midrule
+\multirow{2}{*}{1\,s}
+ & FEMALE & Stacking-2: \newline GB + XGBoost $\rightarrow$ RF &  \normalsize\textbf{0.617} & \normalsize\textbf{0.526} & \normalsize\textbf{0.526} \\\addlinespace[8pt]
+ & MALE   & Stacking-2: \newline DT + RF $\rightarrow$ XGBoost & 0.459 & 0.526 & 0.591 \\
+\midrule
+\multirow{2}{*}{2\,s}
+ & FEMALE & Stacking-2: \newline GB + XGBoost $\rightarrow$ DT & 0.612 & 0.429 & 0.579 \\\addlinespace[8pt]
+ & MALE   & Stacking-2: \newline DT + RF $\rightarrow$ XGBoost & 0.556 & 0.571 & 0.727 \\
+\bottomrule
+\end{tabular}
+}
+\par\vspace{0.5em}
+{\small\raggedright\emph{Note:} DT $=$ Decision Tree; RF $=$ Random Forest; GB $=$ Gradient Boosting.
+Within each architecture category, the representative was selected using TRAIN-CV AUC-ROC rather
+than TEST. The single architecture reported for each sex$\times$window configuration is the
+category representative with the highest calibrated F1 on the original fixed TEST split. This
+cross-category TEST-F1 comparison is descriptive, not an independent TRAIN-only selection step.
+Bold: each sex's headline window (FEMALE 1\,s, MALE 0.5\,s).
+Table~\ref{tab:supp-window-wc} reports the corresponding repeated-split sensitivity analysis
+(Experiment 3b).\par}
+\end{table}
+
+Table~\ref{tab:supp-window-wc} reports Experiment 3b, a repeated-split sensitivity analysis with
+randomized TRAIN/TEST partitions ($N_{\text{reps}}=10$; Section 2.11 of the main text). Because
+the repeated partitions are drawn from the same finite subject pool and are not independent, the
+reported mean $\pm 1.96\,\mathrm{SE}$ intervals characterize variation across the evaluated
+splits and are not used here as formal significance tests against AUC-ROC $=0.5$. Among the six
+sex-by-window combinations, FEMALE at 1\,s and MALE at 0.5\,s (bold below) are the two for which
+the repeated-split mean remained above 0.5 and the reported resampling interval did not span 0.5.
+These are treated as the headline configurations in the main text, while all six combinations are
+reported here for completeness. This choice remains exploratory because window duration itself was
+not selected inside a fully nested resampling procedure.
+
+\begin{table}[H]
+\centering
+\begin{minipage}{0.75\linewidth}
+\captionsetup{justification=raggedright, singlelinecheck=false}
+\caption{Repeated-split sensitivity analysis by window duration and sex: AUC-ROC on randomized TRAIN/TEST splits (Experiment 3b, $N_{\text{reps}}=10$), using the corresponding TRAIN-selected within-category architecture reported in Table~\ref{tab:supp-window-best}.}
+\label{tab:supp-window-wc}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llccc}
+\toprule
+Window & Sex & Mean AUC & Mean $\pm1.96\,\mathrm{SE}$ interval & Interval spans 0.5 \\
+\midrule
+\multirow{2}{*}{0.5\,s}
+ & FEMALE & 0.471 & [0.420-0.523] & Yes \\\addlinespace[4pt]
+ & MALE   & \fontsize{11}{13}\selectfont\textbf{0.604} & \fontsize{10}{12}\selectfont\textbf{[0.537-0.672]} & \fontsize{10}{12}\selectfont\textbf{No} \\
+\midrule
+\multirow{2}{*}{1\,s}
+ & FEMALE & \fontsize{11}{13}\selectfont\textbf{0.611} & \fontsize{10}{12}\selectfont\textbf{[0.549-0.674]} & \fontsize{10}{12}\selectfont\textbf{No} \\\addlinespace[4pt]
+ & MALE   & 0.511 & [0.370-0.653] & Yes \\
+\midrule
+\multirow{2}{*}{2\,s}
+ & FEMALE & 0.488 & [0.395-0.581] & Yes \\\addlinespace[4pt]
+ & MALE   & 0.571 & [0.488-0.654] & Yes \\
+\bottomrule
+\end{tabular}
+}
+\par\vspace{0.5em}
+{\small\raggedright\emph{Note:} Bold $=$ each sex's headline window (FEMALE 1\,s, MALE 0.5\,s). The intervals are mean $\pm1.96\,\mathrm{SE}$ across 10 repeated splits of the same finite subject pool; they are descriptive resampling intervals, not formal independent-sample 95\% confidence intervals.\par}
+\end{minipage}
+\end{table}
+
+The fixed-split results in Table~\ref{tab:supp-window-best} illustrate why conclusions based on a
+single partition would be unstable. For example, FEMALE at 2\,s has a fixed-split AUC-ROC of
+0.612, whereas its Experiment 3b repeated-split mean is 0.488 with a mean $\pm1.96\,\mathrm{SE}$
+interval of [0.395--0.581]. The other non-headline combinations likewise show substantial
+partition sensitivity. FEMALE at 1\,s and MALE at 0.5\,s are the two configurations for which
+the repeated-split means are above 0.5 and the corresponding descriptive intervals do not span
+0.5 (0.611 [0.549--0.674] and 0.604 [0.537--0.672], respectively). This pattern motivated their
+use as the headline configurations for descriptive reporting in Section 3.6 of the main text
+rather than adopting a single sex-agnostic window length.
+However, because window duration was itself compared empirically and was not selected within a
+fully nested procedure, this should be interpreted as an exploratory robustness result rather
+than confirmatory evidence that discrimination exists only at those two window lengths.
+
+\section{Individual Classifier Performance at Non-Headline Windows}
+\label{sec:supp-individual}
+
+For completeness, Tables~\ref{tab:supp-individual-female-500ms}--\ref{tab:supp-individual-male-2s}
+report the fixed-split TEST performance (default probability threshold, 0.5) of the eight base
+classifiers described in Section 2.8 of the main text, at all three window durations for both
+sexes, including each sex's own headline window (FEMALE at 1\,s, MALE at 0.5\,s). Main-text
+Tables 5 and 6 report the corresponding headline-window individual-model results using
+out-of-fold TRAIN-CV metrics for within-category ranking, whereas
+Tables~\ref{tab:supp-individual-female-1s} and~\ref{tab:supp-individual-male-500ms} report
+fixed-split TEST performance for the same eight classifiers, with bootstrap uncertainty
+intervals. The two sets of tables therefore serve different purposes and are not expected to have
+the same ordering or numerical values. Values in brackets are the reported 95\%
+percentile-bootstrap intervals over TEST subjects. Given the small TEST samples in each sex,
+these intervals are expected to be wide and are presented as uncertainty summaries rather than
+evidence for fine-grained differences between classifiers. Rows are sorted by TEST AUC-ROC for
+descriptive completeness only. This ordering is not the architecture-selection criterion used
+within the individual-model category, which instead relies on out-of-fold TRAIN-CV AUC-ROC
+without consulting TEST for the within-category ranking.
+
+\begin{table}[H]
+\centering
+\captionsetup{justification=raggedright, singlelinecheck=false}
+\caption{Performance of the eight individual classifiers on TEST, 0.5\,s window, FEMALE (default
+threshold = 0.5). Value [95\% \emph{bootstrap} CI].}
+\label{tab:supp-individual-female-500ms}
+\resizebox{\linewidth}{!}{%
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{lcccccc}
+\toprule
+{\large Model} & {\large AUC-ROC} & {\large Accuracy} & {\large Sensitivity} & {\large Precision} & {\large Specificity} & {\large F1} \\
+\midrule
+SVM                  & 0.810 [0.550--1.000] & 0.263 [0.053--0.474] & 0.286 [0.000--0.667] & 0.182 [0.000--0.444] & 0.250 [0.000--0.500] & 0.222 [0.000--0.476] \\
+Random Forest        & 0.702 [0.389--0.957] & 0.632 [0.421--0.842] & 0.143 [0.000--0.500] & 0.500 [0.000--1.000] & 0.917 [0.727--1.000] & 0.222 [0.000--0.571] \\
+XGBoost              & 0.690 [0.405--0.933] & 0.632 [0.421--0.842] & 0.286 [0.000--0.667] & 0.500 [0.000--1.000] & 0.833 [0.600--1.000] & 0.364 [0.000--0.667] \\
+Decision Tree        & 0.619 [0.369--0.847] & 0.632 [0.421--0.842] & 0.571 [0.167--1.000] & 0.500 [0.143--0.857] & 0.667 [0.375--0.917] & 0.533 [0.167--0.800] \\
+Gradient Boosting    & 0.500 [0.148--0.829] & 0.737 [0.526--0.895] & 0.429 [0.000--0.833] & 0.750 [0.000--1.000] & 0.917 [0.727--1.000] & 0.545 [0.000--0.857] \\
+Logistic Regression  & 0.310 [0.023--0.643] & 0.421 [0.211--0.632] & 0.286 [0.000--0.667] & 0.250 [0.000--0.600] & 0.500 [0.214--0.778] & 0.267 [0.000--0.556] \\
+Naive Bayes          & 0.262 [0.000--0.590] & 0.316 [0.105--0.526] & 0.286 [0.000--0.667] & 0.200 [0.000--0.500] & 0.333 [0.083--0.615] & 0.235 [0.000--0.500] \\
+KNN                  & 0.196 [0.038--0.405] & 0.368 [0.158--0.579] & 0.000 [0.000--0.000] & 0.000 [0.000--0.000] & 0.583 [0.300--0.857] & 0.000 [0.000--0.000] \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\begin{table}[H]
+\centering
+\captionsetup{justification=raggedright, singlelinecheck=false}
+\caption{Performance of the eight individual classifiers on TEST, 1\,s window (FEMALE headline
+window), FEMALE (default threshold = 0.5). Value [95\% \emph{bootstrap} CI]. TEST-set companion
+to main-text Table~5, which reports out-of-fold TRAIN-CV metrics for within-category ranking.}
+\label{tab:supp-individual-female-1s}
+\resizebox{\linewidth}{!}{%
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{lcccccc}
+\toprule
+{\large Model} & {\large AUC-ROC} & {\large Accuracy} & {\large Sensitivity} & {\large Precision} & {\large Specificity} & {\large F1} \\
+\midrule
+Logistic Regression  & 0.738 [0.461--0.952] & 0.684 [0.474--0.895] & 0.714 [0.333--1.000] & 0.556 [0.200--0.889] & 0.667 [0.385--0.917] & 0.625 [0.286--0.857] \\
+SVM                  & 0.643 [0.318--0.920] & 0.632 [0.421--0.842] & 0.000 [0.000--0.000] & 0.000 [0.000--0.000] & 1.000 [1.000--1.000] & 0.000 [0.000--0.000] \\
+Naive Bayes          & 0.548 [0.318--0.750] & 0.526 [0.316--0.737] & 1.000 [1.000--1.000] & 0.438 [0.200--0.688] & 0.250 [0.000--0.500] & 0.609 [0.333--0.815] \\
+Random Forest        & 0.512 [0.189--0.821] & 0.579 [0.368--0.789] & 0.286 [0.000--0.667] & 0.400 [0.000--1.000] & 0.750 [0.500--1.000] & 0.333 [0.000--0.667] \\
+KNN                  & 0.500 [0.196--0.800] & 0.632 [0.421--0.842] & 0.429 [0.000--0.833] & 0.500 [0.000--1.000] & 0.750 [0.500--1.000] & 0.462 [0.000--0.750] \\
+Gradient Boosting    & 0.464 [0.171--0.779] & 0.368 [0.158--0.579] & 0.714 [0.333--1.000] & 0.333 [0.111--0.583] & 0.167 [0.000--0.400] & 0.455 [0.190--0.692] \\
+Decision Tree        & 0.452 [0.211--0.692] & 0.421 [0.211--0.632] & 0.571 [0.167--1.000] & 0.333 [0.083--0.615] & 0.333 [0.083--0.615] & 0.421 [0.125--0.667] \\
+XGBoost              & 0.452 [0.170--0.750] & 0.526 [0.316--0.737] & 0.571 [0.167--1.000] & 0.400 [0.100--0.714] & 0.500 [0.214--0.786] & 0.471 [0.143--0.737] \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\begin{table}[H]
+\centering
+\captionsetup{justification=raggedright, singlelinecheck=false}
+\caption{Performance of the eight individual classifiers on TEST, 2\,s window, FEMALE (default
+threshold = 0.5). Value [95\% \emph{bootstrap} CI].}
+\label{tab:supp-individual-female-2s}
+\resizebox{\linewidth}{!}{%
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{lcccccc}
+\toprule
+{\large Model} & {\large AUC-ROC} & {\large Accuracy} & {\large Sensitivity} & {\large Precision} & {\large Specificity} & {\large F1} \\
+\midrule
+Gradient Boosting    & 0.690 [0.372--0.966] & 0.632 [0.421--0.842] & 0.714 [0.333--1.000] & 0.500 [0.182--0.818] & 0.583 [0.300--0.857] & 0.588 [0.250--0.833] \\
+Random Forest        & 0.595 [0.311--0.864] & 0.526 [0.316--0.737] & 0.429 [0.000--0.833] & 0.375 [0.000--0.750] & 0.583 [0.300--0.857] & 0.400 [0.000--0.667] \\
+XGBoost              & 0.560 [0.250--0.833] & 0.421 [0.211--0.632] & 0.429 [0.000--0.833] & 0.300 [0.000--0.600] & 0.417 [0.143--0.714] & 0.353 [0.000--0.625] \\
+KNN                  & 0.500 [0.170--0.811] & 0.684 [0.474--0.895] & 0.143 [0.000--0.500] & 1.000 [0.000--1.000] & 1.000 [1.000--1.000] & 0.250 [0.000--0.667] \\
+Decision Tree        & 0.470 [0.227--0.733] & 0.632 [0.421--0.842] & 0.286 [0.000--0.667] & 0.500 [0.000--1.000] & 0.833 [0.600--1.000] & 0.364 [0.000--0.667] \\
+SVM                  & 0.440 [0.136--0.756] & 0.474 [0.263--0.684] & 0.429 [0.000--0.833] & 0.333 [0.000--0.667] & 0.500 [0.222--0.786] & 0.375 [0.000--0.667] \\
+Logistic Regression  & 0.440 [0.143--0.744] & 0.474 [0.263--0.684] & 0.143 [0.000--0.500] & 0.200 [0.000--0.667] & 0.667 [0.375--0.917] & 0.167 [0.000--0.462] \\
+Naive Bayes          & 0.393 [0.125--0.689] & 0.526 [0.316--0.737] & 0.429 [0.000--0.833] & 0.375 [0.000--0.750] & 0.583 [0.300--0.857] & 0.400 [0.000--0.667] \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\begin{table}[H]
+\centering
+\captionsetup{justification=raggedright, singlelinecheck=false}
+\caption{Performance of the eight individual classifiers on TEST, 0.5\,s window (MALE headline
+window), MALE (default threshold = 0.5). Value [95\% \emph{bootstrap} CI]. TEST-set companion to
+main-text Table~6, which reports out-of-fold TRAIN-CV metrics for within-category ranking.}
+\label{tab:supp-individual-male-500ms}
+\resizebox{\linewidth}{!}{%
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{lcccccc}
+\toprule
+{\large Model} & {\large AUC-ROC} & {\large Accuracy} & {\large Sensitivity} & {\large Precision} & {\large Specificity} & {\large F1} \\
+\midrule
+XGBoost              & 0.677 [0.354--0.944] & 0.727 [0.545--0.909] & 0.333 [0.000--0.750] & 0.500 [0.000--1.000] & 0.875 [0.692--1.000] & 0.400 [0.000--0.750] \\
+KNN                  & 0.651 [0.430--0.859] & 0.545 [0.318--0.739] & 0.000 [0.000--0.000] & 0.000 [0.000--0.000] & 0.750 [0.529--0.941] & 0.000 [0.000--0.000] \\
+Random Forest        & 0.635 [0.362--0.882] & 0.773 [0.591--0.909] & 0.167 [0.000--0.500] & 1.000 [0.000--1.000] & 1.000 [1.000--1.000] & 0.286 [0.000--0.667] \\
+Logistic Regression  & 0.594 [0.286--0.875] & 0.545 [0.318--0.727] & 0.667 [0.250--1.000] & 0.333 [0.083--0.615] & 0.500 [0.250--0.750] & 0.444 [0.133--0.700] \\
+Naive Bayes          & 0.583 [0.233--0.906] & 0.273 [0.091--0.455] & 0.667 [0.250--1.000] & 0.222 [0.053--0.429] & 0.125 [0.000--0.312] & 0.333 [0.091--0.560] \\
+SVM                  & 0.542 [0.219--0.859] & 0.500 [0.273--0.727] & 0.500 [0.000--1.000] & 0.273 [0.000--0.556] & 0.500 [0.250--0.750] & 0.353 [0.000--0.625] \\
+Decision Tree        & 0.479 [0.263--0.728] & 0.545 [0.318--0.727] & 0.333 [0.000--0.750] & 0.250 [0.000--0.600] & 0.625 [0.375--0.857] & 0.286 [0.000--0.571] \\
+Gradient Boosting    & 0.469 [0.135--0.807] & 0.591 [0.364--0.773] & 0.500 [0.000--1.000] & 0.333 [0.000--0.667] & 0.625 [0.375--0.857] & 0.400 [0.000--0.667] \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\begin{table}[H]
+\centering
+\captionsetup{justification=raggedright, singlelinecheck=false}
+\caption{Performance of the eight individual classifiers on TEST, 1\,s window, MALE (default
+threshold = 0.5). Value [95\% \emph{bootstrap} CI].}
+\label{tab:supp-individual-male-1s}
+\resizebox{\linewidth}{!}{%
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{lcccccc}
+\toprule
+{\large Model} & {\large AUC-ROC} & {\large Accuracy} & {\large Sensitivity} & {\large Precision} & {\large Specificity} & {\large F1} \\
+\midrule
+XGBoost              & 0.688 [0.376--0.950] & 0.727 [0.545--0.909] & 0.167 [0.000--0.500] & 0.500 [0.000--1.000] & 0.938 [0.789--1.000] & 0.250 [0.000--0.667] \\
+Gradient Boosting    & 0.677 [0.350--0.958] & 0.727 [0.545--0.909] & 0.667 [0.217--1.000] & 0.500 [0.143--0.857] & 0.750 [0.529--0.941] & 0.571 [0.182--0.842] \\
+Decision Tree        & 0.656 [0.395--0.895] & 0.682 [0.500--0.864] & 0.500 [0.000--1.000] & 0.429 [0.000--0.833] & 0.750 [0.529--0.941] & 0.462 [0.000--0.750] \\
+SVM                  & 0.573 [0.188--0.930] & 0.727 [0.545--0.909] & 0.000 [0.000--0.000] & 0.000 [0.000--0.000] & 1.000 [1.000--1.000] & 0.000 [0.000--0.000] \\
+Random Forest        & 0.526 [0.224--0.819] & 0.727 [0.545--0.909] & 0.000 [0.000--0.000] & 0.000 [0.000--0.000] & 1.000 [1.000--1.000] & 0.000 [0.000--0.000] \\
+Naive Bayes          & 0.500 [0.209--0.789] & 0.727 [0.545--0.909] & 0.167 [0.000--0.500] & 0.500 [0.000--1.000] & 0.938 [0.800--1.000] & 0.250 [0.000--0.667] \\
+Logistic Regression  & 0.448 [0.105--0.810] & 0.500 [0.318--0.682] & 0.333 [0.000--0.778] & 0.222 [0.000--0.545] & 0.562 [0.316--0.800] & 0.267 [0.000--0.545] \\
+KNN                  & 0.448 [0.194--0.714] & 0.727 [0.545--0.909] & 0.000 [0.000--0.000] & 0.000 [0.000--0.000] & 1.000 [1.000--1.000] & 0.000 [0.000--0.000] \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+\begin{table}[H]
+\centering
+\captionsetup{justification=raggedright, singlelinecheck=false}
+\caption{Performance of the eight individual classifiers on TEST, 2\,s window, MALE (default
+threshold = 0.5). Value [95\% \emph{bootstrap} CI].}
+\label{tab:supp-individual-male-2s}
+\resizebox{\linewidth}{!}{%
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{lcccccc}
+\toprule
+{\large Model} & {\large AUC-ROC} & {\large Accuracy} & {\large Sensitivity} & {\large Precision} & {\large Specificity} & {\large F1} \\
+\midrule
+SVM                  & 0.625 [0.316--0.912] & 0.727 [0.545--0.909] & 0.000 [0.000--0.000] & 0.000 [0.000--0.000] & 1.000 [1.000--1.000] & 0.000 [0.000--0.000] \\
+Naive Bayes          & 0.562 [0.292--0.821] & 0.591 [0.364--0.773] & 0.667 [0.222--1.000] & 0.364 [0.091--0.667] & 0.562 [0.316--0.800] & 0.471 [0.143--0.727] \\
+Logistic Regression  & 0.500 [0.500--0.500] & 0.727 [0.545--0.909] & 0.000 [0.000--0.000] & 0.000 [0.000--0.000] & 1.000 [1.000--1.000] & 0.000 [0.000--0.000] \\
+Decision Tree        & 0.365 [0.167--0.639] & 0.409 [0.227--0.636] & 0.167 [0.000--0.500] & 0.111 [0.000--0.364] & 0.500 [0.250--0.750] & 0.133 [0.000--0.375] \\
+XGBoost              & 0.333 [0.106--0.597] & 0.500 [0.273--0.727] & 0.000 [0.000--0.000] & 0.000 [0.000--0.000] & 0.688 [0.450--0.895] & 0.000 [0.000--0.000] \\
+KNN                  & 0.266 [0.028--0.580] & 0.682 [0.500--0.864] & 0.000 [0.000--0.000] & 0.000 [0.000--0.000] & 0.938 [0.789--1.000] & 0.000 [0.000--0.000] \\
+Random Forest        & 0.229 [0.053--0.444] & 0.682 [0.500--0.864] & 0.000 [0.000--0.000] & 0.000 [0.000--0.000] & 0.938 [0.789--1.000] & 0.000 [0.000--0.000] \\
+Gradient Boosting    & 0.219 [0.048--0.447] & 0.455 [0.273--0.636] & 0.000 [0.000--0.000] & 0.000 [0.000--0.000] & 0.625 [0.385--0.850] & 0.000 [0.000--0.000] \\
+\bottomrule
+\end{tabular}%
+}
+\end{table}
+
+Consistent with the pattern already reported for each sex's headline window (Section 3.2 of the
+main text), no single classifier reaches strong, consistent performance across both sexes at any
+of the non-headline window durations: several classifiers collapse to predicting only the
+majority class (HEALTH) at the default threshold regardless of window length, most visibly for
+MALE at 2\,s, where five of the eight models never predict a single DEP case. These per-model,
+default-threshold TEST rankings are, in every window and sex shown here, distinct from the
+architecture selected within category by out-of-fold TRAIN-CV AUC-ROC and reported in
+Table~\ref{tab:supp-window-best}. The tables are therefore descriptive TEST-set summaries and
+should not be read as an alternative TEST-based model-selection procedure.
+
+\section{Partially Nested Cross-Validation: Mode-Ranking Stability and Preprocessing-Bias Diagnostic}
+\label{sec:supp-nested}
+
+As noted in Section 2.12 of the main text, the Gaussian-kernel mode ranking and the global scaler
+are each fit once on all TRAIN subjects before the 5-fold cross-validation used to tune
+classifier hyperparameters, so a held-out subject's own label and window distribution have
+already contributed to the mode ranking and normalization applied to their own fold. This does
+not introduce information from TEST into TRAIN, but it can make the internal TRAIN-CV scores
+optimistic. To examine the magnitude of this specific preprocessing-related source of bias, a
+partially nested cross-validation was run for all six sex-by-window combinations: five stratified
+outer folds were built over the TRAIN subjects, and within each fold the mode ranking, scaler,
+and each classifier's hyperparameters were refit using only that fold's own training subjects.
+Window length, $K$, and $N_{\text{select}}$ were held fixed at their reported values. Therefore,
+this diagnostic addresses refitting of mode ranking, scaling and classifier tuning conditional on
+those upstream design choices; it does not quantify the additional selection bias associated with
+choosing window length, $K$, or $N_{\text{select}}$.
+
+Table~\ref{tab:supp-nested-modes} reports the Gaussian-kernel mode set obtained independently in
+each of the five outer folds. Several configurations are internally stable across folds, but
+fold-to-fold stability should not be interpreted as validation of the mode set used in the
+reported pipeline. In particular, at MALE 0.5\,s all five outer folds select
+$\{0,1,2,6,7\}$, whereas the reported MALE configuration uses
+$\{0,1,2,3,7\}$. Likewise, at FEMALE 0.5\,s all five folds select
+$\{0,1,2,7\}$ rather than the reported FEMALE set $\{0,1,2,3\}$.
+At FEMALE 1\,s, four of the five folds agree with the reported set
+$\{0,1,2,3\}$, with one fold selecting $\{0,2,3,7\}$. At MALE 1\,s,
+all five folds select the reported set $\{0,1,2,3,7\}$. At 2\,s,
+FEMALE shows three distinct fold-specific sets, whereas MALE is internally stable at
+$\{0,1,2,3,4\}$. Thus, Table~\ref{tab:supp-nested-modes} informs both fold-to-fold
+reproducibility and agreement with the reported mode choice, which are separate properties.
+
+\begin{table}[H]
+\centering
+\begin{minipage}{0.8\linewidth}
+\captionsetup{justification=raggedright, singlelinecheck=false}
+\caption{Gaussian-kernel mode set obtained independently in each of five stratified outer folds of
+the partially nested cross-validation, by window duration and sex. The ``Stable'' column refers
+only to agreement across the five outer folds, not to agreement with the mode set used in the
+reported pipeline.}
+\label{tab:supp-nested-modes}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llp{7.5cm}c}
+\toprule
+Window & Sex & Modes selected per outer fold (fold 1--5) & Stable \\
+\midrule
+\multirow{2}{*}{0.5\,s}
+ & FEMALE & \{0,1,2,7\} in every fold & Yes \\\addlinespace[8pt]
+ & MALE   & \{0,1,2,6,7\} in every fold & Yes \\
+\midrule
+\multirow{2}{*}{1\,s}
+ & FEMALE & \{0,1,2,3\}; \{0,1,2,3\}; \{0,1,2,3\}; \{0,2,3,7\}; \{0,1,2,3\} & 4/5 \\\addlinespace[8pt]
+ & MALE   & \{0,1,2,3,7\} in every fold & Yes \\
+\midrule
+\multirow{2}{*}{2\,s}
+ & FEMALE & \{0,2,3,4\}; \{0,1,3,4\}; \{0,2,3,4\}; \{0,1,3,4\}; \{1,2,3,4\} & No \\\addlinespace[8pt]
+ & MALE   & \{0,1,2,3,4\} in every fold & Yes \\
+\bottomrule
+\end{tabular}%
+}
+\end{minipage}
+\end{table}
+
+Table~\ref{tab:supp-nested-auc} reports the resulting partially nested AUC-ROC (selected model per
+outer fold, mean $\pm$ SD across folds), alongside Experiment 3b, the repeated-split sensitivity
+analysis in Table~\ref{tab:supp-window-wc}, for the same window and sex. The two sets of values
+are not directly comparable because they use different resampling schemes and answer different
+questions. The five-fold partially nested analysis is included only as a diagnostic of whether
+refitting mode ranking, scaling and classifier tuning within the outer folds materially changes
+the observed performance pattern, conditional on fixed window length, $K$, and
+$N_{\text{select}}$; it is not an additional headline estimate or a correction for all sources
+of model-selection bias.
+
+\begin{table}[H]
+\centering
+\captionsetup{justification=raggedright, singlelinecheck=false}
+\caption{Partially nested AUC-ROC (selected model per outer fold, mean $\pm$ SD across the
+five folds) versus the Experiment 3b repeated-split sensitivity analysis
+(Table~\ref{tab:supp-window-wc}), by window duration and sex.}
+\label{tab:supp-nested-auc}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llccc}
+\toprule
+Window & Sex & \begin{tabular}[t]{@{}c@{}}Nested-CV AUC-ROC\\(mean $\pm$ SD)\end{tabular} & Nested-CV range & \begin{tabular}[t]{@{}c@{}}Exp.\ 3b AUC-ROC\\{[}mean $\pm1.96\,\mathrm{SE}$ interval{]}\end{tabular} \\
+\midrule
+\multirow{2}{*}{0.5\,s}
+ & FEMALE & 0.677 $\pm$ 0.177 & [0.472--0.900] & 0.471 [0.420--0.523] \\\addlinespace[10pt]
+ & MALE   & 0.716 $\pm$ 0.128 & [0.583--0.896] & 0.604 [0.537--0.672] \\
+\midrule
+\multirow{2}{*}{1\,s}
+ & FEMALE & 0.612 $\pm$ 0.136 & [0.472--0.800] & 0.611 [0.549--0.674] \\\addlinespace[10pt]
+ & MALE   & 0.626 $\pm$ 0.110 & [0.542--0.818] & 0.511 [0.370--0.653] \\
+\midrule
+\multirow{2}{*}{2\,s}
+ & FEMALE & 0.670 $\pm$ 0.091 & [0.528--0.775] & 0.488 [0.395--0.581] \\\addlinespace[10pt]
+ & MALE   & 0.674 $\pm$ 0.134 & [0.455--0.792] & 0.571 [0.488--0.654] \\
+\bottomrule
+\end{tabular}%
+}
+\par\vspace{0.5em}
+{\small\raggedright\emph{Note:} Nested-CV AUC-ROC uses five outer folds, whereas Experiment 3b uses 10 repeated TRAIN/TEST splits of the same finite subject pool. The two columns summarize different resampling procedures and are shown only as a sensitivity comparison; numerical agreement is not expected.\par}
+\end{table}
+
+Across all six sex-by-window combinations, the partially nested AUC-ROC values are of broadly
+similar magnitude to the corresponding Experiment 3b means, although the two procedures are not
+directly comparable. FEMALE at 1\,s shows the closest numerical agreement (0.612 in the partially
+nested analysis versus 0.611 in Experiment 3b). However, the mode-set results in
+Table~\ref{tab:supp-nested-modes} show that internal fold stability does not necessarily imply
+agreement with the mode set used in the reported pipeline. This is particularly clear at
+MALE 0.5\,s and FEMALE 0.5\,s, where all five outer folds agree with each other but select a
+different set from the one reported. The partially nested analysis should therefore be interpreted
+as a diagnostic of sensitivity to refitting within folds, not as validation of the original mode
+subset. It also does not rule out optimism arising from upstream choices held fixed in this
+diagnostic, including window duration, $K$, $N_{\text{select}}$, or other researcher degrees of
+freedom.
+
+\end{document}
